@@ -95,6 +95,8 @@ public final class CropImage {
   public static final int CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE = 204;
   // endregion
 
+  private static Bitmap resultBitmap = null;
+
   private CropImage() {}
 
   /**
@@ -125,6 +127,17 @@ public final class CropImage {
     return output;
   }
 
+  static void setResultBitmap(@Nullable Bitmap bitmap){
+    if(bitmap == null && resultBitmap != null){
+      resultBitmap.recycle();
+    }
+    resultBitmap = bitmap;
+  }
+
+  public static @Nullable Bitmap getResultBitmap(){
+    return resultBitmap;
+  }
+
   /**
    * Start an activity to get image for cropping using chooser intent that will have all the
    * available applications for the device like camera (MyCamera), galery (Photos), store apps
@@ -136,6 +149,15 @@ public final class CropImage {
   public static void startPickImageActivity(@NonNull Activity activity) {
     activity.startActivityForResult(
         getPickImageChooserIntent(activity), PICK_IMAGE_CHOOSER_REQUEST_CODE);
+  }
+
+  /**
+   * Start an activity to pick an image directly from an image picker. Will not show
+   * options for various gallery apps.
+   * @param activity
+   */
+  public static void startGalleryPickerActivity(@NonNull Activity activity){
+    activity.startActivityForResult(getGalleryIntent(), PICK_IMAGE_CHOOSER_REQUEST_CODE);
   }
 
   /**
@@ -207,6 +229,22 @@ public final class CropImage {
             Intent.EXTRA_INITIAL_INTENTS, allIntents.toArray(new Parcelable[allIntents.size()]));
 
     return chooserIntent;
+  }
+
+  /**
+   * Create a chooser intent with a single gallery intent. This will now prompt the user
+   * to select an option but trigger the image picker directly. This is used when the camera option
+   * is disabled.
+   * @return
+   */
+  public static Intent getGalleryIntent(){
+
+    Intent intent = new Intent();
+    intent.setType("image/*");
+    intent.setAction(Intent.ACTION_GET_CONTENT);
+    intent.addCategory(Intent.CATEGORY_OPENABLE);
+
+    return Intent.createChooser(intent, "Choose Image");
   }
 
   /**
@@ -911,6 +949,11 @@ public final class CropImage {
      */
     public ActivityBuilder setCropMenuCropButtonIcon(@DrawableRes int drawableResource) {
       mOptions.cropMenuCropButtonIcon = drawableResource;
+      return this;
+    }
+
+    public ActivityBuilder disableCamera(){
+      mOptions.disableCamera = 1;
       return this;
     }
   }
