@@ -22,14 +22,15 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,14 +55,16 @@ public class CropImageActivity extends AppCompatActivity
   @Override
   @SuppressLint("NewApi")
   public void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.crop_image_activity);
-
-    mCropImageView = findViewById(R.id.cropImageView);
 
     Bundle bundle = getIntent().getBundleExtra(CropImage.CROP_IMAGE_EXTRA_BUNDLE);
     mCropImageUri = bundle.getParcelable(CropImage.CROP_IMAGE_EXTRA_SOURCE);
     mOptions = bundle.getParcelable(CropImage.CROP_IMAGE_EXTRA_OPTIONS);
+    setTheme(mOptions.activityTheme);
+
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.crop_image_activity);
+
+    mCropImageView = findViewById(R.id.cropImageView);
 
     if (savedInstanceState == null) {
       if (mCropImageUri == null || mCropImageUri.equals(Uri.EMPTY)) {
