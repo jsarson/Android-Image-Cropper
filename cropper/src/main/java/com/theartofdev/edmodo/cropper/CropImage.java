@@ -95,8 +95,6 @@ public final class CropImage {
   public static final int CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE = 204;
   // endregion
 
-  private static Bitmap resultBitmap = null;
-
   private CropImage() {}
 
   /**
@@ -125,17 +123,6 @@ public final class CropImage {
     bitmap.recycle();
 
     return output;
-  }
-
-  static void setResultBitmap(@Nullable Bitmap bitmap){
-    if(bitmap == null && resultBitmap != null){
-      resultBitmap.recycle();
-    }
-    resultBitmap = bitmap;
-  }
-
-  public static @Nullable Bitmap getResultBitmap(){
-    return resultBitmap;
   }
 
   /**

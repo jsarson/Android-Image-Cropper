@@ -13,7 +13,6 @@
 package com.theartofdev.edmodo.cropper.quick.start;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -52,12 +51,14 @@ public class MainActivity extends AppCompatActivity {
 
         // handle result of CropImageActivity
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
-
-            Bitmap b = CropImage.getResultBitmap();
-            if(b != null){
-                ((ImageView) findViewById(R.id.quick_start_cropped_image)).setImageBitmap(b);
-            }else{
-                Toast.makeText(this, "Cropping failed", Toast.LENGTH_LONG).show();
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == RESULT_OK) {
+                ((ImageView) findViewById(R.id.quick_start_cropped_image)).setImageURI(result.getUri());
+                Toast.makeText(
+                        this, "Cropping successful, Sample: " + result.getSampleSize(), Toast.LENGTH_LONG)
+                        .show();
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                Toast.makeText(this, "Cropping failed: " + result.getError(), Toast.LENGTH_LONG).show();
             }
         }
     }

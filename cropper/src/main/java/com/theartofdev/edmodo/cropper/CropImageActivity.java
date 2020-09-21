@@ -66,10 +66,6 @@ public class CropImageActivity extends AppCompatActivity
 
     mCropImageView = findViewById(R.id.cropImageView);
 
-    if(CropImage.getResultBitmap() != null){
-      CropImage.setResultBitmap(null);
-    }
-
     if (savedInstanceState == null) {
         if (mCropImageUri == null || mCropImageUri.equals(Uri.EMPTY)) {
           if (CropImage.isExplicitCameraPermissionRequired(this)) {
@@ -312,10 +308,6 @@ public class CropImageActivity extends AppCompatActivity
   protected void setResult(Uri uri, Exception error, int sampleSize) {
     int resultCode = error == null ? RESULT_OK : CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE;
     setResult(resultCode, getResultIntent(uri, error, sampleSize));
-
-      Bitmap b = (uri.getPath() != null) ? BitmapUtils.readBitmapFromFile(uri.getPath()) : null;
-      CropImage.setResultBitmap(b);
-
     finish();
   }
 
