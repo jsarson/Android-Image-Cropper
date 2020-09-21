@@ -24,6 +24,9 @@ import android.net.Uri;
 import android.util.Log;
 import android.util.Pair;
 
+import androidx.annotation.NonNull;
+import androidx.exifinterface.media.ExifInterface;
+
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -36,8 +39,6 @@ import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.egl.EGLDisplay;
-
-import androidx.exifinterface.media.ExifInterface;
 
 /** Utility class that deals with operations with an ImageView. */
 final class BitmapUtils {
@@ -408,6 +409,20 @@ final class BitmapUtils {
     } finally {
       closeSafe(outputStream);
     }
+  }
+
+  /**
+   * Read a bitmap from file
+   *
+   * @param fileName the input file path
+   * @return the bitmap read from the given file
+   */
+  public static Bitmap readBitmapFromFile(@NonNull String fileName)
+  {
+    BitmapFactory.Options options = new BitmapFactory.Options();
+    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+
+    return BitmapFactory.decodeFile(fileName, options);
   }
 
   /** Resize the given bitmap to the given width/height by the given option.<br> */

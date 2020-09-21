@@ -66,31 +66,36 @@ public class CropImageActivity extends AppCompatActivity
 
     mCropImageView = findViewById(R.id.cropImageView);
 
+    if(CropImage.getResultBitmap() != null){
+      CropImage.setResultBitmap(null);
+    }
+
     if (savedInstanceState == null) {
-      if (mCropImageUri == null || mCropImageUri.equals(Uri.EMPTY)) {
-        if (CropImage.isExplicitCameraPermissionRequired(this)) {
+        if (mCropImageUri == null || mCropImageUri.equals(Uri.EMPTY)) {
+          if (CropImage.isExplicitCameraPermissionRequired(this)) {
+            // request permissions and handle the result in onRequestPermissionsResult()
+            requestPermissions(
+                    new String[]{Manifest.permission.CAMERA},
+                    CropImage.CAMERA_CAPTURE_PERMISSIONS_REQUEST_CODE);
+          } else {
+            CropImage.startPickImageActivity(this);
+          }
+        } else if (CropImage.isReadExternalStoragePermissionsRequired(this, mCropImageUri)) {
           // request permissions and handle the result in onRequestPermissionsResult()
           requestPermissions(
-              new String[] {Manifest.permission.CAMERA},
-              CropImage.CAMERA_CAPTURE_PERMISSIONS_REQUEST_CODE);
+                  new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                  CropImage.PICK_IMAGE_PERMISSIONS_REQUEST_CODE);
         } else {
-          CropImage.startPickImageActivity(this);
+          // no permissions required or already grunted, can start crop image activity
+          mCropImageView.setImageUriAsync(mCropImageUri);
         }
-      } else if (CropImage.isReadExternalStoragePermissionsRequired(this, mCropImageUri)) {
-        // request permissions and handle the result in onRequestPermissionsResult()
-        requestPermissions(
-            new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
-            CropImage.PICK_IMAGE_PERMISSIONS_REQUEST_CODE);
-      } else {
-        // no permissions required or already grunted, can start crop image activity
-        mCropImageView.setImageUriAsync(mCropImageUri);
-      }
+
     }
 
     ActionBar actionBar = getSupportActionBar();
     if (actionBar != null) {
       CharSequence title = mOptions != null &&
-          mOptions.activityTitle != null && mOptions.activityTitle.length() > 0
+              mOptions.activityTitle != null && mOptions.activityTitle.length() > 0
               ? mOptions.activityTitle
               : getResources().getString(R.string.crop_image_activity_title);
       actionBar.setTitle(title);
@@ -192,6 +197,7 @@ public class CropImageActivity extends AppCompatActivity
   @Override
   @SuppressLint("NewApi")
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+      super.onActivityResult(requestCode, resultCode, data);
 
     // handle result of pick image chooser
     if (requestCode == CropImage.PICK_IMAGE_CHOOSER_REQUEST_CODE) {
@@ -306,6 +312,10 @@ public class CropImageActivity extends AppCompatActivity
   protected void setResult(Uri uri, Exception error, int sampleSize) {
     int resultCode = error == null ? RESULT_OK : CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE;
     setResult(resultCode, getResultIntent(uri, error, sampleSize));
+
+      Bitmap b = (uri.getPath() != null) ? BitmapUtils.readBitmapFromFile(uri.getPath()) : null;
+      CropImage.setResultBitmap(b);
+
     finish();
   }
 
