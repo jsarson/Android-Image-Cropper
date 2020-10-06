@@ -191,6 +191,11 @@ public final class CropImage {
 
     allIntents.add(getGalleryIntent(Intent.ACTION_GET_CONTENT, includeDocuments));
 
+    Intent otherGalleriesIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+    otherGalleriesIntent.setType("image/*");
+    allIntents.add(otherGalleriesIntent);
+    
+
     Intent target;
     if (allIntents.isEmpty()) {
       target = new Intent();
